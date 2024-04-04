@@ -21,7 +21,7 @@ import me.ghui.v2er.util.Utils;
 public class NodeTopicInfo extends BaseInfo {
 
     @Pick("span.topic-count strong")
-    private int total;
+    private String total;
     @Pick(value = "a[href*=favorite/] ", attr = Attrs.HREF)
     private String favoriteLink;
     @Pick("div.box div.cell:has(table)")
@@ -32,7 +32,8 @@ public class NodeTopicInfo extends BaseInfo {
     }
 
     public int getTotal() {
-        return total;
+        String result = total.replaceAll("[^0-9]", "");
+        return Integer.parseInt(result);
     }
 
     public List<Item> getItems() {
