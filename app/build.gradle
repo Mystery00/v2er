@@ -27,9 +27,9 @@ android {
         release {
             try {
                 storeFile file("../ghui.jks")
-                storePassword GHUI_KEYSTORE_PASSWORD
+                storePassword "GHUI_KEYSTORE_PASSWORD"
                 keyAlias "ghui"
-                keyPassword GHUI_KEY_PASSWORD
+                keyPassword "GHUI_KEY_PASSWORD"
             } catch (ex) {
                 throw ex.printStackTrace()
             }
