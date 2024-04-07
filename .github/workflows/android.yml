@@ -35,6 +35,9 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.apk.outputs.versionName }}-${{ steps.apk.outputs.versionCode }}
+        body: |
+          v2er: 按照正常版本规则迭代的安装包版本
+          v2er-max: 强制设置版本号为 999999 的版本，用于忽略Play商店的版本更新提示
         files: |
           outputs/v2er.apk
           outputs/v2er-max.apk
