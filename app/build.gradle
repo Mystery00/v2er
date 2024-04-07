@@ -12,6 +12,17 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
+    flavorDimensions "version"
+    productFlavors {
+        gh {
+            dimension "version"
+            versionCode rootProject.ext.app.versionCode
+        }
+        ghm {
+            dimension "version"
+            versionCode 999999
+        }
+    }
     signingConfigs {
         github {
             try {
