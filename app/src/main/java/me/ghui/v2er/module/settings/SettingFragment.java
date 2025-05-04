@@ -9,6 +9,7 @@ import android.preference.PreferenceFragment;
 
 import androidx.annotation.StringRes;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -64,6 +65,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         findPreference(getString(R.string.pref_key_contact_me_tg)).setOnPreferenceClickListener(this);
         findPreference(getString(R.string.pref_key_contact_me_twitter)).setOnPreferenceClickListener(this);
 //        findPreference(getString(R.string.pref_key_open_source)).setOnPreferenceClickListener(this);
+        findPreference(getString(R.string.pref_key_open_source_mystery0)).setOnPreferenceClickListener(this);
         ListPreference fontItem = (ListPreference) findPreference(getString(R.string.pref_key_fontsize));
         fontItem.setSummary(fontItem.getValue());
         fontItem.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -126,7 +128,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         } else if (key.equals(getString(R.string.pref_send_email))) {
             Utils.sendOfficalV2erEmail(getActivity());
             return true;
-        }  else if (key.equals(getString(R.string.pref_key_v2ex))) {
+        } else if (key.equals(getString(R.string.pref_key_v2ex))) {
             Utils.openWap(getString(R.string.official_v2ex_about_website), getActivity());
         } else if (key.equals(getString(R.string.pref_key_user_group))) {
             Utils.openWap("https://t.me/v2er_app", getActivity());
@@ -150,8 +152,10 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
             Utils.jumpToTwitterProfilePage(getActivity());
         } else if (key.equals(getString(R.string.pref_key_contact_me_tg))) {
             Utils.openWap("https://t.me/v2er_app", getActivity());
-        }  else if (key.equals(getString(R.string.pref_key_open_source))) {
+        } else if (key.equals(getString(R.string.pref_key_open_source))) {
             Utils.openWap("https://github.com/v2er-app", getActivity());
+        } else if (key.equals(getString(R.string.pref_key_open_source_mystery0))) {
+            Utils.openWap("https://github.com/Mystery00/Android", getActivity());
         }
         return false;
     }
