@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:node="remove" />
+
+    <queries>
+        <package android:name="org.telegram.messenger" />
+        <package android:name="com.twitter.android" />
+    </queries>
 
     <application
         android:name=".general.App"
@@ -128,11 +130,6 @@
             android:name=".module.general.WapActivity"
             android:exported="true"
             android:label="" />
-        <activity
-            android:name=".module.pay.WXPayActivity"
-            android:label=""
-            android:exported="true"
-            android:theme="@style/TranslucentTheme" />
         <activity
             android:name=".module.gallery.GalleryActivity"
             android:exported="true"
