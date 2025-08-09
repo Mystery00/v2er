@@ -24,6 +24,8 @@ public class NodeTopicInfo extends BaseInfo {
     private String total;
     @Pick(value = "a[href*=favorite/] ", attr = Attrs.HREF)
     private String favoriteLink;
+    @Pick(value = "a[href*=ignore/] ", attr = Attrs.HREF)
+    private String ignoreLink;
     @Pick("div.box div.cell:has(table)")
     private List<Item> items;
 
@@ -44,8 +46,16 @@ public class NodeTopicInfo extends BaseInfo {
         return Constants.BASE_URL + favoriteLink;
     }
 
+    public String getIgnoreLink() {
+        return Constants.BASE_URL + ignoreLink;
+    }
+
     public boolean hasStared() {
         return Check.notEmpty(favoriteLink) && favoriteLink.contains("/unfavorite/node/");
+    }
+
+    public boolean hasIgnored() {
+        return Check.notEmpty(ignoreLink) && ignoreLink.contains("/unignore/node/");
     }
 
     public void updateStarStatus(boolean isStared) {
@@ -56,18 +66,20 @@ public class NodeTopicInfo extends BaseInfo {
         }
     }
 
-    public String getOnce() {
-        if (Check.notEmpty(favoriteLink)) {
-            return UriUtils.getParamValue(favoriteLink, "once");
+    public void updateIgnoreStatus(boolean isIgnored) {
+        if (isIgnored) {
+            ignoreLink = ignoreLink.replace("/ignore/", "/unignore/");
+        } else {
+            ignoreLink = ignoreLink.replace("/unignore/", "/ignore/");
         }
-        return null;
     }
 
     @Override
     public String toString() {
         return "NodeTopicInfo{" +
-                "favoriteLink=" + favoriteLink +
-                ",total=" + total +
+                "total='" + total + '\'' +
+                ", favoriteLink='" + favoriteLink + '\'' +
+                ", ignoreLink='" + ignoreLink + '\'' +
                 ", items=" + items +
                 '}';
     }

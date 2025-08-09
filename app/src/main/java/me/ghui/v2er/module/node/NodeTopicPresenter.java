@@ -76,19 +76,20 @@ public class NodeTopicPresenter implements NodeTopicContract.IPresenter {
     }
 
     @Override
-    public void ignoreNode() {
-        APIService.get().ignoreNode(mView.nodeId(), mTopicInfo.getOnce())
+    public void ignoreNode(String url) {
+        if (UserUtils.notLoginAndProcessToLogin(false, mView.getContext())) return;
+        APIService.get().ignoreNode(url)
                 .compose(mView.rx())
-                .subscribe(new GeneralConsumer<NodeTopicInfo>(mView) {
+                .subscribe(new GeneralConsumer<SimpleInfo>(mView) {
                     @Override
-                    public void onConsume(NodeTopicInfo nodeTopicInfo) {
+                    public void onConsume(SimpleInfo simpleInfo) {
+                        boolean forIgnore = url.contains("/ignore/");
+                        if (forIgnore) {
+                            mView.afterIgnoreNode();
+                        } else {
+                            mView.afterUnIgnoreNode();
+                        }
                     }
                 });
     }
-
-    @Override
-    public void unIgnoreNode() {
-
-    }
-
 }

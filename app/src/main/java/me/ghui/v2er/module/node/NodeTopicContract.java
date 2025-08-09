@@ -14,9 +14,7 @@ public class NodeTopicContract {
 
         void starNode(String url);
 
-        void ignoreNode();
-
-        void unIgnoreNode();
+        void ignoreNode(String url);
 
         public int getPage();
     }

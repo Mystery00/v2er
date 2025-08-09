@@ -168,12 +168,9 @@ public interface APIs {
     Observable<IgnoreResultInfo> ignoreReply(@Path("id") String replyId, @Query("once") String once);
 
     @Html
-    @GET("/settings/ignore/node/{id}")
-    Observable<NodeTopicInfo> ignoreNode(@Path("id") String nodeId, @Query("once") String once);
-
-    @Html
-    @GET("/settings/unignore/node/{id}")
-    Observable<NodeTopicInfo> unIgnoreNode(@Path("id") String nodeId, @Query("once") String once);
+    @GET
+    @Headers("Referer: " + RefererUtils.TINY_REFER)
+    Observable<SimpleInfo> ignoreNode(@Url String url);
 
     @Html
     @GET("/unfavorite/topic/{id}")

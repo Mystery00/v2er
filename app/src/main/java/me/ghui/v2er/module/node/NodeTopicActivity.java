@@ -93,6 +93,8 @@ public class NodeTopicActivity extends BaseActivity<NodeTopicContract.IPresenter
     TextView mNodeStarNumTv;
     @BindView(R.id.node_info_star_ct)
     FollowProgressBtn mStarBtn;
+    @BindView(R.id.node_info_ignore_ct)
+    FollowProgressBtn mIgnoreBtn;
     @Inject
     LoadMoreRecyclerView.Adapter<NodeTopicInfo.Item> mAdapter;
     private String mTagName;
@@ -329,6 +331,7 @@ public class NodeTopicActivity extends BaseActivity<NodeTopicContract.IPresenter
         }
         mNodeInfo = nodeInfo;
         mStarBtn.setVisibility(View.VISIBLE);
+        mIgnoreBtn.setVisibility(View.VISIBLE);
         mCollapsingToolbarLayout.setTitle(nodeInfo.getTitle());
         mNodeText.setText(nodeInfo.getTitle());
         String desc = nodeInfo.getHeader();
@@ -370,6 +373,7 @@ public class NodeTopicActivity extends BaseActivity<NodeTopicContract.IPresenter
         mAdapter.setData(mNodeTopicInfo.getItems(), isLoadMore);
         mRecyclerView.setHasMore(mNodeTopicInfo.getTotal() > mAdapter.getContentItemCount());
         toggleStar(mNodeTopicInfo.hasStared());
+        toggleIgnore(mNodeTopicInfo.hasIgnored());
     }
 
 
@@ -395,28 +399,55 @@ public class NodeTopicActivity extends BaseActivity<NodeTopicContract.IPresenter
         }
     }
 
+
+    @OnClick(R.id.node_info_ignore_ct)
+    void onBlockBtnClicked() {
+        //star or unstar
+        if (mNodeTopicInfo == null) {
+            toast("请等待数据加载完成");
+            return;
+        }
+        if (!mNodeTopicInfo.hasIgnored()) {
+            new ConfirmDialog.Builder(getActivity())
+                    .title("忽略节点")
+                    .msg("确定忽略节点吗？")
+                    .positiveText(R.string.ok, dialog -> {
+                        mIgnoreBtn.startUpdate();
+                        mPresenter.ignoreNode(mNodeTopicInfo.getIgnoreLink());
+                    })
+                    .negativeText(R.string.cancel)
+                    .build().show();
+        } else {
+            mPresenter.ignoreNode(mNodeTopicInfo.getIgnoreLink());
+        }
+    }
+
     @Override
     public void afterStarNode() {
-        toast("收藏成功");
+        toast("节点收藏成功");
         toggleStar(true);
         mNodeTopicInfo.updateStarStatus(true);
     }
 
     @Override
     public void afterUnStarNode() {
-        toast("取消收藏成功");
+        toast("节点取消收藏成功");
         toggleStar(false);
         mNodeTopicInfo.updateStarStatus(false);
     }
 
     @Override
     public void afterIgnoreNode() {
-
+        toast("节点忽略成功");
+        toggleIgnore(true);
+        mNodeTopicInfo.updateIgnoreStatus(true);
     }
 
     @Override
     public void afterUnIgnoreNode() {
-
+        toast("节点取消忽略成功");
+        toggleIgnore(false);
+        mNodeTopicInfo.updateIgnoreStatus(false);
     }
 
     private void toggleStar(boolean isStared) {
@@ -427,6 +458,14 @@ public class NodeTopicActivity extends BaseActivity<NodeTopicContract.IPresenter
             mStarBtn.setStatus(FollowProgressBtn.FINISHED, "已收藏", R.drawable.progress_button_done_icon);
         } else {
             mStarBtn.setStatus(FollowProgressBtn.NORMAL, "收藏", R.drawable.progress_button_follow_normal_icon);
+        }
+    }
+
+    private void toggleIgnore(boolean isIgnored) {
+        if (isIgnored) {
+            mIgnoreBtn.setStatus(FollowProgressBtn.FINISHED, "已忽略", R.drawable.progress_button_done_icon);
+        } else {
+            mIgnoreBtn.setStatus(FollowProgressBtn.NORMAL, "忽略", R.drawable.progress_button_follow_normal_icon);
         }
     }
 
