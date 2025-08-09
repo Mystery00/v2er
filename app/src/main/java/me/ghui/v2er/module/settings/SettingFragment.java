@@ -155,7 +155,7 @@ public class SettingFragment extends PreferenceFragment implements Preference.On
         } else if (key.equals(getString(R.string.pref_key_open_source))) {
             Utils.openWap("https://github.com/v2er-app", getActivity());
         } else if (key.equals(getString(R.string.pref_key_open_source_mystery0))) {
-            Utils.openWap("https://github.com/Mystery00/Android", getActivity());
+            Utils.openWap("https://github.com/Mystery00/v2er", getActivity());
         }
         return false;
     }

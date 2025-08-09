@@ -116,7 +116,7 @@
         <Preference
             android:key="@string/pref_key_open_source_mystery0"
             android:layout="@layout/preference_item"
-            android:summary="https://github.com/Mystery00/Android"
+            android:summary="https://github.com/Mystery00/v2er"
             android:title="GitHub Fork" />
     </PreferenceCategory>
     <Preference
