@@ -16,7 +16,7 @@ public class DailyInfo extends BaseInfo {
     private String avatar;
     @Pick("h1")
     private String title;
-    @Pick("div.cell:contains(已连续)")
+    @Pick("div.cell>span:contains(已连续)")
     private String continuousLoginDayStr;
     @Pick(value = "div.cell input[type=button]", attr = "onclick")
     private String checkinUrl; //location.href = '/mission/daily/redeem?once=84830';
