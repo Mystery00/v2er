@@ -53,6 +53,7 @@ import me.ghui.v2er.util.Theme;
 import me.ghui.v2er.util.UserUtils;
 import me.ghui.v2er.util.Utils;
 import me.ghui.v2er.util.ViewUtils;
+import me.ghui.v2er.util.FontSizeUtil;
 import me.ghui.v2er.widget.BaseToolBar;
 import me.ghui.v2er.widget.CSlidingTabLayout;
 import me.ghui.v2er.widget.FollowProgressBtn;
@@ -97,7 +98,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private MenuItem mNightMenuItem;
     private SwitchCompat mNightSwitch;
     private HomeFilterMenu mFilterMenu;
-    private boolean isAppbarExpanted = true;
+    private boolean isAppbarExpanded = true;
 
     @Override
     protected int attachLayoutRes() {
@@ -116,10 +117,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 
     @SuppressLint({"CheckResult", "WrongConstant"})
     protected void configToolBar() {
+        // Apply padding to AppBarLayout for status bar
         Utils.setPaddingForStatusBar(mAppBarLayout);
         mToolbar.setOnDoubleTapListener(this);
         mToolbar.setElevation(0);
         mToolbar.setNavigationIcon(R.drawable.nav);
+        mToolbar.setNavigationContentDescription(R.string.acc_nav_menu);
         mToolbar.getNavigationIcon().setTint(Theme.getColor(R.attr.icon_tint_color, this));
         mToolbar.inflateMenu(R.menu.main_toolbar_menu);//设置右上角的填充菜单
         mToolbar.setNavigationOnClickListener(v -> {
@@ -168,6 +171,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         mAvatarImg.setOnClickListener(this);
         mUserNameTv.setOnClickListener(this);
         mCheckInBtn.setOnClickListener(this);
+
+        // Apply font size to navigation header
+        mUserNameTv.setTextSize(TypedValue.COMPLEX_UNIT_PX, FontSizeUtil.getTitleSize());
+
+        // Apply font size scaling to navigation menu items
+        applyFontSizeToNavigationMenu();
         mNightMenuItem = mNavigationView.getMenu().findItem(R.id.day_night_item);
 
         mAvatarImg.setOnLongClickListener(v -> {
@@ -230,11 +239,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
         });
 
         mAppBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                super.onOffsetChanged(appBarLayout, verticalOffset);
+                // Calculate toolbar's visibility based on its position
+                int toolbarHeight = mToolbar.getHeight();
+                int statusBarHeight = Utils.getStatusBarHeight();
+
+                // When toolbar is scrolled up and would be under status bar, hide it
+                if (Math.abs(verticalOffset) >= toolbarHeight - statusBarHeight) {
+                    mToolbar.setVisibility(View.INVISIBLE);
+                } else {
+                    mToolbar.setVisibility(View.VISIBLE);
+                }
+            }
+
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, AppBarStateChangeListener.State state) {
-                isAppbarExpanted = state == State.EXPANDED;
-                int paddingTop = isAppbarExpanted ? 0 : 36;
-                mSlidingTabLayout.setPadding(0, paddingTop, 0, 0);
+                // Only update when fully expanded or collapsed, ignore IDLE state
+                if (state == State.EXPANDED) {
+                    isAppbarExpanded = true;
+                    mToolbar.setVisibility(View.VISIBLE);
+                } else if (state == State.COLLAPSED) {
+                    isAppbarExpanded = false;
+                    mToolbar.setVisibility(View.INVISIBLE);
+                }
+                // IDLE state doesn't change the expanded status
             }
         });
 
@@ -248,15 +279,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
 
         int index = getIntent().getIntExtra(TAB_INDEX, 0);
         mSlidingTabLayout.setCurrentTab(index);
-        isAppbarExpanted = getIntent().getBooleanExtra(TOPIC_IS_APPBAR_EXPANDED, true);
-        mAppBarLayout.setExpanded(isAppbarExpanted);
+        isAppbarExpanded = getIntent().getBooleanExtra(TOPIC_IS_APPBAR_EXPANDED, true);
+        mAppBarLayout.setExpanded(isAppbarExpanded);
     }
 
     @Override
     protected void reloadMode(int mode) {
         ActivityReloader.target(this)
                 .putExtra(TAB_INDEX, mSlidingTabLayout.getCurrentTab())
-                .putExtra(TOPIC_IS_APPBAR_EXPANDED, isAppbarExpanted)
+                .putExtra(TOPIC_IS_APPBAR_EXPANDED, isAppbarExpanded)
                 .putExtra(PAGE_ONE_DATA, mNewsFragment.getRestoreData())
                 .putExtra(PAGE_TWO_DATA, mMsgFragment.getRestoreData())
                 .putExtra(PAGE_THREE_DATA, mNavFragment.getRestoreData())
@@ -295,6 +326,66 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private void initCheckIn() {
         mCheckInPresenter = new CheckInPresenter(this);
         mCheckInPresenter.start();
+    }
+
+    private void applyFontSizeToNavigationMenu() {
+        // Apply font size based on preference
+        // This is better handled by setting text appearance in styles
+        // We'll use a post delay to ensure the menu is fully initialized
+        mNavigationView.postDelayed(() -> {
+            applyFontScalingToMenuItems();
+        }, 100);
+    }
+
+    private void applyFontScalingToMenuItems() {
+        // Apply scaling only once to avoid repeated scaling
+        View menuView = mNavigationView.getChildAt(0);
+        if (menuView instanceof RecyclerView) {
+            RecyclerView recyclerView = (RecyclerView) menuView;
+            // Apply to currently visible items
+            for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                View child = recyclerView.getChildAt(i);
+                if (child != null && child.getTag(R.id.font_scaled_tag) == null) {
+                    applyScalingToView(child);
+                    child.setTag(R.id.font_scaled_tag, true);
+                }
+            }
+
+            // Set up listener for future items but check if already scaled
+            recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+                @Override
+                public void onChildViewAttachedToWindow(View view) {
+                    if (view.getTag(R.id.font_scaled_tag) == null) {
+                        applyScalingToView(view);
+                        view.setTag(R.id.font_scaled_tag, true);
+                    }
+                }
+
+                @Override
+                public void onChildViewDetachedFromWindow(View view) {
+                    // No action needed
+                }
+            });
+        }
+    }
+
+    private void applyScalingToView(View view) {
+        if (view instanceof TextView) {
+            TextView textView = (TextView) view;
+            // Save original size if not already saved
+            Object originalSize = textView.getTag(R.id.original_text_size_tag);
+            if (originalSize == null) {
+                textView.setTag(R.id.original_text_size_tag, textView.getTextSize());
+                float baseSize = textView.getTextSize();
+                float scaledSize = FontSizeUtil.getScaledSize(baseSize);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledSize);
+            }
+        } else if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                applyScalingToView(viewGroup.getChildAt(i));
+            }
+        }
     }
 
     private void updateDrawLayout() {

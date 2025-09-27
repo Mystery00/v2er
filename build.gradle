@@ -2,23 +2,24 @@ apply from: "config.gradle"
 
 buildscript {
     repositories {
-        mavenCentral()
         google()
-        maven { url "https://maven.aliyun.com/repository/public" }
+        mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.2'
+        classpath 'com.android.tools.build:gradle:8.12.0'
     }
 }
 
 allprojects {
     repositories {
-        mavenCentral()
         google()
-        maven { url "https://maven.aliyun.com/repository/public" }
+        mavenCentral()
         maven { url "https://jitpack.io" }
-//        maven { url "https://dl.bintray.com/ghui/Java" }
+        // Add repository for dependencies that were on JCenter
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        // For FlycoTabLayout
+        maven { url 'https://maven.aliyun.com/repository/public' }
     }
 }
 

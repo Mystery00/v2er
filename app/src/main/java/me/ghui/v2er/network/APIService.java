@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -126,24 +125,8 @@ public class APIService {
                 return new Response.Builder()
                         .protocol(Protocol.HTTP_1_1)
                         .code(404)
-                        .message("Exeception when execute chain.proceed request")
-                        .body(new ResponseBody() {
-                            @Nullable
-                            @Override
-                            public MediaType contentType() {
-                                return null;
-                            }
-
-                            @Override
-                            public long contentLength() {
-                                return 0;
-                            }
-
-                            @Override
-                            public BufferedSource source() {
-                                return null;
-                            }
-                        })
+                        .message("Exception when execute chain.proceed request")
+                        .body(ResponseBody.create("Network error occurred", MediaType.parse("text/plain")))
                         .request(request).build();
             }
         }

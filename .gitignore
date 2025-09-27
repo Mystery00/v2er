@@ -7,3 +7,22 @@
 /captures
 .externalNativeBuild
 *.icloud
+*.jks
+*.keystore
+*.base64.txt
+keystore.jks
+app/keystore.jks
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md
+fastlane/play-store-key.json
+fastlane/*.json
+
+# Bundle
+vendor/bundle/
+.bundle/
+Gemfile.lockfastlane/node_modules/
