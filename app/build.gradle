@@ -28,17 +28,6 @@ android {
         }
     }
     signingConfigs {
-        github {
-            try {
-                storeFile file("../v2er.jks")
-                storePassword "v2er.app"
-                keyAlias "v2er"
-                keyPassword "v2er.app"
-            } catch (ex) {
-                throw ex.printStackTrace()
-            }
-        }
-
         release {
             // Release signing requires environment variables to be set
             // The keystore will be decoded from KEYSTORE_BASE64 in CI/CD
@@ -50,10 +39,6 @@ android {
     }
 
     buildTypes {
-        github {
-            signingConfig signingConfigs.github
-        }
-
         release {
             minifyEnabled true
             shrinkResources true
